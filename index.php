@@ -26,6 +26,11 @@
 	
 	<h2>Insert Data</h2>
 	<table>
+		<tr id="product-id" style="display: none;">
+			<td>Product ID</td>
+			<td>:</td>
+			<td><input type="text" name="productID" disabled="disabled"></td>
+		</tr>
 		<tr>
 			<td>Product Name</td>
 			<td>:</td>
@@ -60,6 +65,28 @@
 		//Load data
 		loadData();
 
+		// select data
+		$(document).on("click",".select-data",function(){
+			// mengambil nilai data-id
+			var productID = $(this).data("id");
+			
+			$.ajax({
+				type : "GET",
+				data : {productID:productID},
+				url : "doGetDataProduct.php",
+				success : function(result){
+					$("#product-id").show();
+					var resultObj = JSON.parse(result);
+
+					$("[name='productName']").val(resultObj.productName);
+					$("[name='productDescription']").val(resultObj.productDescription);
+					$("[name='productPrice']").val(resultObj.productPrice);
+					$("[name='productID']").val(resultObj.productID);
+
+				}
+			});
+		});
+
 		// membuat fungsi Insert Data
 		function insertData(){
 			// mengambil falue dari input
@@ -91,7 +118,6 @@
 				}
 			});
 		}
-
 		// membuat fungsi Load Data
 		function loadData(){
 			// mengambil html utk dijadikan handler
@@ -110,7 +136,7 @@
 					$.each(resultObj,function(key,val){
 
 						var newRow = $("<tr>");
-						newRow.html("<td>"+val.productID+"</td><td>"+val.productName+"</td><td>"+val.productDescription+"</td><td>"+val.productPrice+"</td>"+"<td><button>Select</button></td>");
+						newRow.html("<td>"+val.productID+"</td><td>"+val.productName+"</td><td>"+val.productDescription+"</td><td>"+val.productPrice+"</td>"+"<td><button class='select-data' data-id='"+val.productID+"'>Select</button></td>");
 
 						dataHandler.append(newRow);
 
