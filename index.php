@@ -8,7 +8,7 @@
 	
 	<h2>Product List</h2>
 
-	<table style="width: 80%;text-align:left;">
+	<table style="width: 70%;text-align:left;">
 		<thead>
 			<tr>
 				<th>Product ID</th>
@@ -24,7 +24,7 @@
 	
 	<hr>
 	
-	<h2>Insert Data</h2>
+	<h2>Insert Data / Update Data</h2>
 	<table>
 		<tr id="product-id" style="display: none;">
 			<td>Product ID</td>
@@ -49,12 +49,12 @@
 		<tr>
 			<td></td>
 			<td></td>
-			<td><span id="message-error" style="color:red"></span></td>
+			<td><span id="message" style="color:red"></span></td>
 		</tr>
 		<tr>
 			<td></td>
 			<td></td>
-			<td><button onclick="insertData()">Insert Data</button></td>
+			<td><button onclick="insertData()">Insert Data</button> <button onclick="updateData()">Update Data</button></td>
 		</tr>
 	</table>
 
@@ -87,6 +87,55 @@
 			});
 		});
 
+		// delete data
+		$(document).on("click",".delete-data",function(){
+			// mengambil nilai data-id
+			var productID = $(this).data("id");
+			
+			$.ajax({
+				type : "POST",
+				data : {productID:productID},
+				url : "doDeleteData.php",
+				success : function(result){
+					var resultObj = JSON.parse(result);
+
+					loadData();
+					$("#message").html(resultObj.message);
+
+
+
+				}
+			});
+		});
+
+		// membuat fungsi update data
+		function updateData(){
+			// mengambil valuedari input
+			var productID        = $("[name='productID']").val();
+			var productName        = $("[name='productName']").val();
+			var productDescription = $("[name='productDescription']").val();
+			var productPrice       = $("[name='productPrice']").val();
+
+			$.ajax({
+				type : "POST",
+				data : {productID: productID, productName: productName,productDescription: productDescription, productPrice:productPrice },
+				url : "doUpdateData.php",
+				success : function(result){
+					var resultObj = JSON.parse(result);
+
+					loadData();
+
+					$("#message").html(resultObj.message);
+
+					var productName        = $("[name='productName']").val("");
+					var productDescription = $("[name='productDescription']").val("");
+					var productPrice       = $("[name='productPrice']").val("");
+
+					$("#product-id").hide();
+				}
+			});
+		}
+
 		// membuat fungsi Insert Data
 		function insertData(){
 			// mengambil falue dari input
@@ -102,7 +151,7 @@
 					//parsing json menjadi object
 					var resultObj = JSON.parse(result);
 					// mengambil html utk dijadikan handler
-					var dataHandler = $("#message-error");
+					var dataHandler = $("#message");
 
 					// menampilkan pesan
 					dataHandler.html(resultObj.message);
@@ -136,7 +185,7 @@
 					$.each(resultObj,function(key,val){
 
 						var newRow = $("<tr>");
-						newRow.html("<td>"+val.productID+"</td><td>"+val.productName+"</td><td>"+val.productDescription+"</td><td>"+val.productPrice+"</td>"+"<td><button class='select-data' data-id='"+val.productID+"'>Select</button></td>");
+						newRow.html("<td>"+val.productID+"</td><td>"+val.productName+"</td><td>"+val.productDescription+"</td><td>"+val.productPrice+"</td>"+"<td><button class='select-data' data-id='"+val.productID+"'>Select</button></td>"+"<td><button class='delete-data' data-id='"+val.productID+"'>Delete</button></td>");
 
 						dataHandler.append(newRow);
 
