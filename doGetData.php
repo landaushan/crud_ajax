@@ -2,18 +2,19 @@
 
 include_once("config/connection.php");
 
-$queryResult = $connect->query("SELECT * FROM product");
+$keyword = isset($_GET['keyword']) ? $_GET['keyword'] : false;
+
+$search = "WHERE productName LIKE '%$keyword%' OR productDescription LIKE '%$keyword%'";
+
+$queryResult = $connect->query("SELECT * FROM product $search");
+$result = null;
 $result = array();
 
 while($fetchData = $queryResult->fetch_assoc()){
 	$result[] = $fetchData;
 }
 
-$arraybaru = array_values($result);
+$hasil = array_values($result);
 
-
-echo json_encode($result);
-
-
-
+echo json_encode($hasil);
  ?>

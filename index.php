@@ -7,6 +7,8 @@
 <body>
 	
 	<h2>Product List</h2>
+	
+	<input type="text" name="search" id="search">
 
 	<table style="width: 70%;text-align:left;">
 		<thead>
@@ -64,6 +66,42 @@
 		
 		//Load data
 		loadData();
+
+		$(document).ready(function(){
+			var keyword = $("#search").val();
+
+			console.log(keyword+"aaa");
+		});
+
+		// search
+		$(document).on("keyup","#search",function(){
+			var keyword = $(this).val();
+
+			if(keyword == ""){
+
+			}else {
+					$.ajax({
+					type : "GET",
+					data : {keyword:keyword},
+					url : "doGetData.php",
+					success : function(result){
+						//parsing json menjadi object
+						var resultObj = JSON.parse(result);
+						var dataHandler = $("#load-data-here");
+						dataHandler.html("");
+						// menampilkan data 
+						$.each(resultObj,function(key,val){
+
+							var newRow = $("<tr>");
+							newRow.html("<td>"+val.productID+"</td><td>"+val.productName+"</td><td>"+val.productDescription+"</td><td>"+val.productPrice+"</td>"+"<td><button class='select-data' data-id='"+val.productID+"'>Select</button></td>"+"<td><button class='delete-data' data-id='"+val.productID+"'>Delete</button></td>");
+
+							dataHandler.append(newRow);
+
+						});
+					}
+				});
+			}
+		});
 
 		// select data
 		$(document).on("click",".select-data",function(){
